@@ -1,0 +1,32 @@
+#include <stdio.h>
+#include <windows.h>
+
+DWORD WINAPI threadFunction(LPVOID lpParam) {
+    printf("Thread is running\n");
+    for (int i = 0; i < 5; i++) {
+        printf("Thread is working...\n");
+        Sleep(1000);
+    }
+    printf("Thread is exiting\n");
+    return 0;
+}
+
+int main() {
+    HANDLE threadHandle = CreateThread(NULL, 0, threadFunction, NULL, 0, NULL);
+
+    if (threadHandle == NULL) {
+        fprintf(stderr, "Error creating thread\n");
+        return 1;
+    }
+
+    for (int i = 0; i < 3; i++) {
+        printf("Main thread is working...\n");
+        Sleep(1000);
+    }
+
+    WaitForSingleObject(threadHandle, INFINITE);
+    CloseHandle(threadHandle);
+
+    printf("Main thread is exiting\n");
+    return 0;
+}

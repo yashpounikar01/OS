@@ -1,0 +1,62 @@
+#include <stdio.h>
+
+void findAvgTime(int processes[], int n, int bt[], int at[], int priority[]) {
+    int wt[n], tat[n];
+    wt[0] = 0;
+
+    for (int i = 1; i < n; i++) {
+        int position = i, temp;
+        for (int j = i + 1; j < n; j++) {
+            if (priority[j] < priority[position]) {
+                position = j;
+            }
+        }
+
+        temp = priority[i], priority[i] = priority[position], priority[position] = temp;
+        temp = bt[i], bt[i] = bt[position], bt[position] = temp;
+        temp = processes[i], processes[i] = processes[position], processes[position] = temp;
+
+        wt[i] = wt[i - 1] + bt[i - 1];
+    }
+
+    for (int i = 0; i < n; i++) {
+        tat[i] = bt[i] + wt[i];
+    }
+
+    float total_wt = 0, total_tat = 0;
+    for (int i = 0; i < n; i++) {
+        total_wt += wt[i];
+        total_tat += tat[i];
+    }
+
+    printf("Processes Arrival time Burst time Priority Waiting time Turnaround time\n");
+    for (int i = 0; i < n; i++) {
+        printf(" %d %d %d %d %d %d\n", processes[i], at[i], bt[i], priority[i], wt[i], tat[i]);
+    }
+
+    printf("Average waiting time = %f\n", total_wt / n);
+    printf("Average turnaround time = %f\n", total_tat / n);
+}
+
+int main() {
+    int n;
+    printf("Enter the number of processes: ");
+    scanf("%d", &n);
+
+    int processes[n], burstTime[n], arrivalTime[n], priority[n];
+
+    printf("Enter arrival time, burst time, and priority for each process:\n");
+    for (int i = 0; i < n; i++) {
+        printf("Process %d:\nArrival Time: ", i + 1);
+        scanf("%d", &arrivalTime[i]);
+        printf("Burst Time: ");
+        scanf("%d", &burstTime[i]);
+        printf("Priority: ");
+        scanf("%d", &priority[i]);
+        processes[i] = i + 1; // Assign process IDs
+    }
+
+    findAvgTime(processes, n, burstTime, arrivalTime, priority);
+
+    return 0;
+}

@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int cmp(const void *a, const void *b)
+{
+    return (*(int *)a - *(int *)b);
+}
+
+void scanDisk(int arr[], int head, int size)
+{
+    int distance = 0, currentPosition = head;
+    qsort(arr, size, sizeof(int), cmp);
+
+    printf("Sequence of movement: %d ", head);
+
+    for (int i = 0; i < size; i++)
+    {
+        distance += abs(currentPosition - arr[i]);
+        currentPosition = arr[i];
+        printf("-> %d ", arr[i]);
+    }
+
+    printf("\nTotal head movement: %d\n", distance);
+}
+
+int main()
+{
+    int size, head;
+
+    printf("Enter the number of requests: ");
+    scanf("%d", &size);
+
+    int requests[size];
+
+    printf("Enter the requests:\n");
+    for (int i = 0; i < size; i++)
+    {
+        scanf("%d", &requests[i]);
+    }
+
+    printf("Enter the initial head position: ");
+    scanf("%d", &head);
+
+    scanDisk(requests, head, size);
+
+    return 0;
+}

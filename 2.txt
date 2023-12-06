@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <string.h>
+
+#define MAX_BUFFER_SIZE 1024
+
+int main()
+{
+    char filename[100], buffer[MAX_BUFFER_SIZE];
+
+    // Get filename from the user
+    printf("Enter filename: ");
+    scanf("%s", filename);
+
+    int fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, S_IRUSR | S_IWUSR);
+
+    if (fd == -1)
+    {
+        perror("Error opening file");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("Enter data to write to the file (Ctrl+D to end input):\n");
+    while (fgets(buffer, MAX_BUFFER_SIZE, stdin) != NULL)
+        if (write(fd, buffer, strlen(buffer)) == -1)
+        {
+            perror("Error writing to file");
+            close(fd);
+            exit(EXIT_FAILURE);
+        }
+
+    close(fd);
+
+    fd = open(filename, O_RDONLY);
+    if (fd == -1)
+    {
+        perror("Error opening file for reading");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("\nContents of the file:\n");
+    ssize_t bytesRead;
+    while ((bytesRead = read(fd, buffer, MAX_BUFFER_SIZE)) > 0)
+        write(STDOUT_FILENO, buffer, bytesRead);
+
+    close(fd);
+    return 0;
+}

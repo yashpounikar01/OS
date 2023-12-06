@@ -1,0 +1,69 @@
+#include <stdio.h>
+
+void findAvgTime(int processes[], int n, int bt[], int at[]) {
+    int wt[n], tat[n], service_time = 0;
+    wt[0] = 0;
+
+    for (int i = 1; i < n; i++) {
+        service_time += bt[i - 1];
+        wt[i] = (service_time > at[i]) ? service_time - at[i] : 0;
+    }
+
+    for (int i = 0; i < n; i++) {
+        tat[i] = bt[i] + wt[i];
+    }
+
+    float total_wt = 0, total_tat = 0;
+    for (int i = 0; i < n; i++) {
+        total_wt += wt[i];
+        total_tat += tat[i];
+    }
+
+    printf("Processes Arrival time Burst time Waiting time Turnaround time\n");
+    for (int i = 0; i < n; i++) {
+        printf(" %d %d %d %d %d\n", processes[i], at[i], bt[i], wt[i], tat[i]);
+    }
+
+    printf("Average waiting time = %f\n", total_wt / n);
+    printf("Average turnaround time = %f\n", total_tat / n);
+}
+
+int main() {
+    int n;
+    printf("Enter the number of processes: ");
+    scanf("%d", &n);
+
+    int processes[n], burstTime[n], arrivalTime[n];
+
+    printf("Enter arrival time and burst time for each process:\n");
+    for (int i = 0; i < n; i++) {
+        printf("Process %d:\nArrival Time: ", i + 1);
+        scanf("%d", &arrivalTime[i]);
+        printf("Burst Time: ");
+        scanf("%d", &burstTime[i]);
+        processes[i] = i + 1; // Assign process IDs
+    }
+
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (arrivalTime[j] > arrivalTime[j + 1] || (arrivalTime[j] == arrivalTime[j + 1] && burstTime[j] > burstTime[j + 1])) {
+                // Swap
+                int temp = arrivalTime[j];
+                arrivalTime[j] = arrivalTime[j + 1];
+                arrivalTime[j + 1] = temp;
+
+                temp = burstTime[j];
+                burstTime[j] = burstTime[j + 1];
+                burstTime[j + 1] = temp;
+
+                temp = processes[j];
+                processes[j] = processes[j + 1];
+                processes[j + 1] = temp;
+            }
+        }
+    }
+
+    findAvgTime(processes, n, burstTime, arrivalTime);
+
+    return 0;
+}
